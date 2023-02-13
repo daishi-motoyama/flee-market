@@ -4,12 +4,13 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common'
 import { ItemsService } from './items.service'
 import { Item } from './items.model'
-import { ItemStatus } from './items-status.enum'
+import { CreateItemsDto } from './dto/create-items.dto'
 
 @Controller('items')
 export class ItemsController {
@@ -20,29 +21,18 @@ export class ItemsController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string): Item {
+  findById(@Param('id', ParseUUIDPipe) id: string): Item {
     return this.itemsService.findById(id)
   }
 
   @Post()
-  create(
-    @Body('id') id: string,
-    @Body('name') name: string,
-    @Body('price') price: number,
-    @Body('description') description: string,
-  ): Item {
-    return this.itemsService.create({
-      id,
-      name,
-      price,
-      description,
-      status: ItemStatus.OnSale,
-    })
+  create(@Body() createItemDto: CreateItemsDto): Item {
+    return this.itemsService.create(createItemDto)
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body('name') name: string,
     @Body('price') price: number,
     @Body('description') description: string,
@@ -55,7 +45,7 @@ export class ItemsController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string): boolean {
+  delete(@Param('id', ParseUUIDPipe) id: string): boolean {
     return this.itemsService.delete(id)
   }
 }
